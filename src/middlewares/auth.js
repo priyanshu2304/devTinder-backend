@@ -5,7 +5,7 @@ const userAuthorized = async (req, res, next) => {
   try {
     const { token } = req.cookies;
     if (!token) {
-      throw new Error("Please login to continue");
+      return res.status(401).send("Please login to continue");
     }
 
     const { _id } = await jwt.verify(token, "Priyanshu@123");

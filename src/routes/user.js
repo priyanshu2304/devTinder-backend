@@ -69,36 +69,72 @@ userRouter.get(
 );
 
 userRouter.get("/feed", userAuthorized, async (req, res) => {
+  //   try {
+  //     const { _id } = req.user;
+  //     const limit = parseInt(req.query.limit > 50 ? 50 : req.query.limit) || 10;
+  //     let page = parseInt(req.query.page) || 1;
+  //     let skip = (page - 1) * limit;
+
+  //     const connections = await connectionRequest
+  //       .find({
+  //         $or: [{ toUserId: _id }, { fromUserId: _id }],
+  //       })
+  //       .select("toUserId fromUserId");
+
+  //     const hideUser = new Set();
+  //     connections.forEach((req) => {
+  //       hideUser.add(req.fromUserId.toString());
+  //       hideUser.add(req.toUserId.toString());
+  //     });
+
+  //     const userFeed = await User.find({
+  //       $and: [{ _id: { $nin: Array.from(hideUser) } }, { _id: { $ne: _id } }],
+  //     })
+  //       .select("firstName lastName skills age about")
+  //       .skip(skip)
+  //       .limit(limit);
+  //     const totalCount = await User.countDocuments({
+  //       $and: [{ _id: { $nin: Array.from(hideUser) } }, { _id: { $ne: _id } }],
+  //     });
+  //     res.json({ userFeed, pageNumber: page, limit, totalCount });
+  //   } catch (error) {
+  //     res.status(404).send(`Error: ${error.message}`);
+  //   }
+
   try {
     const { _id } = req.user;
-    const limit = parseInt(req.query.limit > 50 ? 50 : req.query.limit) || 10;
-    let page = parseInt(req.query.page) || 1;
-    let skip = (page - 1) * limit;
 
-    const connections = await connectionRequest
+    const limit = req.params.limit || 10;
+    const page = req.params.page || 1;
+    const skip = (page - 1) * limit;
+
+    const connectedRequest = await connectionRequest
       .find({
-        $or: [{ toUserId: _id }, { fromUserId: _id }],
+        $or: [{ fromUserId: _id }, { toUserId: _id }],
       })
-      .select("toUserId fromUserId");
+      .select("fromUserId toUserId");
 
     const hideUser = new Set();
-    connections.forEach((req) => {
-      hideUser.add(req.fromUserId.toString());
-      hideUser.add(req.toUserId.toString());
+    connectedRequest.forEach((req) => {
+      hideUser.add(req.toUserId);
+      hideUser.add(req.fromUserId);
     });
+    hideUser.add(_id);
 
     const userFeed = await User.find({
-      $and: [{ _id: { $nin: Array.from(hideUser) } }, { _id: { $ne: _id } }],
+      _id: { $nin: Array.from(hideUser) },
     })
-      .select("firstName lastName skills age about")
+      .select("firstName lastName skills age about photoUrl")
       .skip(skip)
       .limit(limit);
+
     const totalCount = await User.countDocuments({
-      $and: [{ _id: { $nin: Array.from(hideUser) } }, { _id: { $ne: _id } }],
+      _id: { $nin: Array.from(hideUser) },
     });
-    res.json({ userFeed, pageNumber: page, limit, totalCount });
+
+    res.send({ userFeed, page, limit, totalCount });
   } catch (error) {
-    res.status(404).send(`Error: ${error.message}`);
+    res.status(400).send(`Error: ${error.message}`);
   }
 });
 

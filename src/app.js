@@ -2,12 +2,21 @@ const express = require("express");
 const app = express();
 const connectDB = require("./config/database");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const userRouter = require("./routes/user");
 
+const allowedOrigins = ["http://localhost:5173", "https://yourdomain.com"];
+
+app.use(
+  cors({
+    origin: [allowedOrigins],
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 app.use(express.json());
 

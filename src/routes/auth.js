@@ -16,9 +16,10 @@ appRouter.post("/signup", async (req, res) => {
       lastName,
       skills,
       gender,
+      photoUrl,
     });
     await user.save();
-    res.send("User Saved");
+    res.json(user);
   } catch (error) {
     res.status(404).send(`Error: ${error.message}`);
   }
@@ -42,7 +43,7 @@ appRouter.post("/login", async (req, res) => {
       res.cookie("token", token, {
         maxAge: 24 * 60 * 60 * 1000,
       });
-      res.send("Login Successful");
+      res.json(user);
     }
   } catch (error) {
     res.status(404).send(`Error: ${error.message}`);

@@ -39,6 +39,9 @@ const userSchema = new Schema(
       type: Number,
       minLength: 18,
     },
+    photoUrl: {
+      type: String,
+    },
     email: {
       type: String,
       required: true,
