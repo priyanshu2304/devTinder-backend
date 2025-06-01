@@ -14,11 +14,12 @@ userRouter.get("/user/requests/recieved", userAuthorized, async (req, res) => {
         toUserId: _id,
         status: "interested",
       })
-      .populate("fromUserId", "firstName lastName age about");
+      .populate(
+        "fromUserId",
+        "firstName lastName age about gender skills about"
+      );
 
-    res.json({
-      connectedUser,
-    });
+    res.json(connectedUser);
   } catch (error) {
     res.status(404).send(`Error: ${error.message}`);
   }
@@ -47,9 +48,14 @@ userRouter.get(
           ...userCondition,
           status,
         })
-        .populate("fromUserId", "firstName lastName skills age about")
-        .populate("toUserId", "firstName lastName skills age about");
-
+        .populate(
+          "fromUserId",
+          "firstName lastName age about gender skills about photoUrl"
+        )
+        .populate(
+          "toUserId",
+          "firstName lastName age about gender skills about photoUrl"
+        );
       data = data.map((row) => {
         if (String(row.fromUserId._id) === String(_id)) {
           return row.toUserId;
@@ -103,9 +109,8 @@ userRouter.get("/feed", userAuthorized, async (req, res) => {
 
   try {
     const { _id } = req.user;
-
-    const limit = req.params.limit || 10;
-    const page = req.params.page || 1;
+    const limit = Number(req.query.limit) || 10;
+    const page = Number(req.query.page) || 1;
     const skip = (page - 1) * limit;
 
     const connectedRequest = await connectionRequest
@@ -125,7 +130,7 @@ userRouter.get("/feed", userAuthorized, async (req, res) => {
       _id: { $nin: Array.from(hideUser) },
     })
       .select("firstName lastName skills age about photoUrl")
-      .skip(skip)
+      .skip(0)
       .limit(limit);
 
     const totalCount = await User.countDocuments({

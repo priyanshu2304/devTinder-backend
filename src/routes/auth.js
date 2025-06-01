@@ -7,7 +7,8 @@ const User = require("../models/user");
 appRouter.post("/signup", async (req, res) => {
   try {
     validateSignup(req);
-    const { email, password, firstName, lastName, skills, gender } = req.body;
+    const { email, password, firstName, lastName, skills, gender, photoUrl } =
+      req.body;
     const passwordHash = await bcrypt.hash(password, 10);
     const user = new User({
       email,
