@@ -19,8 +19,15 @@ appRouter.post("/signup", async (req, res) => {
       gender,
       photoUrl,
     });
+
+    const token = await user.getJWT();
     await user.save();
-    res.json(user);
+    if (user) {
+      res.cookie("token", token, {
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+      res.json(user);
+    }
   } catch (error) {
     res.status(404).send(`Error: ${error.message}`);
   }
