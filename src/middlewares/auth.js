@@ -8,7 +8,7 @@ const userAuthorized = async (req, res, next) => {
       return res.status(401).send("Please login to continue");
     }
 
-    const { _id } = await jwt.verify(token, "Priyanshu@123");
+    const { _id } = await jwt.verify(token, process.env.JWT_SECRET_KEY);
     const user = await User.findById(_id);
     if (!user) {
       throw new Error("user not found ");
