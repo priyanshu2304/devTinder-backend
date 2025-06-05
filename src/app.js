@@ -1,9 +1,10 @@
-require("dotenv").config();
 const express = require("express");
 const app = express();
 const connectDB = require("./config/database");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+
+require("dotenv").config();
 
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
