@@ -11,7 +11,7 @@ const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const userRouter = require("./routes/user");
 
-const allowedOrigins = ["http://localhost:5173", "https://yourdomain.com"];
+const allowedOrigins = ["http://localhost:5173", "https://www.therichie.in"];
 
 app.use(
   cors({
