@@ -64,9 +64,10 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
 
     payment.status = status;
     await payment.save();
-
+    console.log("req", req.body.event);
     if (req.body.event === "payment.captured") {
       const user = await User.findById(payment.userId);
+      console.log("user", user);
       if (user) {
         user.isPremium = true;
         user.membershipType = paymentDetails.notes.membershipType;
