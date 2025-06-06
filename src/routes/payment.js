@@ -42,7 +42,7 @@ paymentRouter.post("/payment/create", userAuthorized, async (req, res) => {
 
 paymentRouter.post("/payment/webhook", async (req, res) => {
   try {
-    const webhookSignature = req.header["X-Razorpay-Signature"];
+    const webhookSignature = req.headers["x-razorpay-signature"];
     const isWebhookValid = validateWebhookSignature(
       JSON.stringify(req.body),
       webhookSignature,
@@ -69,7 +69,7 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
 
     return res.send(200).json({ message: "Webhook recieved successfull" });
   } catch (error) {
-    return res.send(400).json(error.message);
+    return res.send(500).json(error.message);
   }
 });
 
