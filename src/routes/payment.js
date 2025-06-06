@@ -64,10 +64,8 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
 
     payment.status = status;
     await payment.save();
-    console.log("req", req.body.event);
     if (req.body.event === "payment.captured") {
       const user = await User.findById(payment.userId);
-      console.log("user", user);
       if (user) {
         user.isPremium = true;
         user.membershipType = paymentDetails.notes.membershipType;
@@ -78,6 +76,18 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     return res.status(200).json({ message: "Webhook received successfully" });
   } catch (error) {
     console.error("Webhook error:", error);
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+paymentRouter.get("/paymentverify", userAuthorized, async (req, res) => {
+  try {
+    const user = req.user;
+    if (user.isPremium) {
+      return res.json({ message: "payment Verified", isPremium: true });
+    }
+    return res.json({ message: "payment Verified", isPremium: false });
+  } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 });
