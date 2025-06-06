@@ -52,6 +52,13 @@ const userSchema = new Schema(
         }
       },
     },
+    membershipType: {
+      type: String,
+    },
+    isPremium: {
+      type: Boolean,
+      default: false,
+    },
     gender: {
       type: String,
       validate(value) {
